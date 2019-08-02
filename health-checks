@@ -1,0 +1,9 @@
+import os
+hostnames = ['sslnnp220']
+for i in hostnames:
+ with open("/home/DC081072/scripts/F5/F5-DIR/"+str(i)+"_int.txt") as file: #Read the content of a file
+     data =file.read()
+     if data == '1':
+         print ("Interface health checks for "+str(i)+" is Green")
+     else:
+         print ("Interface health checks for "+str(i)+" is FAILED")
