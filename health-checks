@@ -1,9 +1,11 @@
 import os
+class F5:
+    sslnnp220_interface="1"
 hostnames = ['sslnnp220']
 for i in hostnames:
  with open("/home/DC081072/scripts/F5/F5-DIR/"+str(i)+"_int.txt") as file: #Read the content of a file
      data =file.read()
-     if data == '1':
-         print ("Interface health checks for "+str(i)+" is Green")
+     if data == getattr(F5,str(i)+'_interface'):
+         print ("\n\nInterface health checks for "+str(i)+" is Green\n\n")
      else:
-         print ("Interface health checks for "+str(i)+" is FAILED")
+         print ("\n\nInterface health checks for "+str(i)+" is FAILED\n\n")
