@@ -1,0 +1,50 @@
+import os
+from f5.bigip import ManagementRoot
+import getpass
+import requests
+requests.packages.urllib3.disable_warnings()
+
+
+
+class F5:
+    sslnnp220_interface="1"
+    sslnnp220_srv="62"
+    sslekp220_interface="1"
+    sslekp220_srv="62"
+    lbseks241_interface="3"
+    lbseks241_srv="43"
+
+
+hostnames = ['lbseks241','sslnnp220','sslekp220']
+for i in hostnames:
+     mgmt = ManagementRoot(i, 'admin','Cisco@123')
+     command='tmsh show net interface all | grep -i up | wc -l'
+     cmd = "-c \'" + command + "\'"
+     x = mgmt.tm.util.bash.exec_cmd('run', utilCmdArgs=cmd)
+     print("Checking number of up intefaces on %s"% i)
+     print(x.commandResult,file=open("/home/DC081072/scripts/F5/F5-DIR/"+str(i)+"_int.txt", "w"))
+hostnames = ['lbseks241','sslnnp220','sslekp220']
+for i in hostnames:
+     mgmt = ManagementRoot(i, 'admin','Cisco@123')
+     command='bigstart status | grep -i run | wc -l'
+     cmd = "-c \'" + command + "\'"
+     x = mgmt.tm.util.bash.exec_cmd('run', utilCmdArgs=cmd)
+     print("Checking number of running F5 services on %s" % i)
+     print(x.commandResult,file=open("/home/DC081072/scripts/F5/F5-DIR/"+str(i)+"_srv.txt", "w"))
+
+hostnames = ['sslnnp220','sslekp220','lbseks241']
+for i in hostnames:
+ with open("/home/DC081072/scripts/F5/F5-DIR/"+str(i)+"_int.txt") as file: #Read the content of a file
+     data =file.readline().strip()
+     if data == getattr(F5,str(i)+'_interface'):
+         print ("\nInterface health checks for "+str(i)+" is Green\n")
+     else:
+         print ("\nInterface health checks for "+str(i)+" is FAILED\n")
+hostnames = ['sslnnp220','sslekp220','lbseks241']
+for i in hostnames:
+ with open("/home/DC081072/scripts/F5/F5-DIR/"+str(i)+"_srv.txt") as file: #Read the content of a file
+     data =file.readline().strip()
+     if data == getattr(F5,str(i)+'_srv'):
+         print ("\nF5 service health checks for "+str(i)+" is Green\n")
+     else:
+         print ("\nF5 service health checks for "+str(i)+" is FAILED\n")
