@@ -1,0 +1,14 @@
+from time import time
+import requests
+from bs4 import BeautifulSoup
+URL ='http://www.kloth.net/services/dig.php'
+headers = {"User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'}
+time_before = time()
+page=requests.post(URL,headers=headers,data={'d':'www.vodafone.com.au','n':'4.2.2.2','q':'A'})
+soup=BeautifulSoup(page.content,'html.parser')
+result=soup.pre.text
+#print(result)
+time_after = time()
+time_taken = time_after-time_before
+print('Time take for the dig request is ',time_taken)
+
