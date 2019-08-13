@@ -1,0 +1,4 @@
+
+    | {{ "%-70s" | format(dev_name)| lower()}}<span{% if (result=='PASSED') %} style="color: green"{% endif %}> {{ "%-2s" |format(result)}}   |</span>
+    +---------------------------------------------------------------------------------+
+
