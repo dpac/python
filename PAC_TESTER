@@ -1,0 +1,13 @@
+from pypac import PACSession, get_pac
+from requests.auth import HTTPProxyAuth
+pac = get_pac(url='http://vfproxy.vodafone.com.au/accelerated_pac_base.pac')
+session = PACSession(pac,proxy_auth=HTTPProxyAuth('USERNAME', 'PASSWORD'))
+with open("URL.txt") as file:
+        for line in file:
+                response=session.get(str(line.strip()),stream=True)
+                print(response.url)
+                print(response.status_code)
+                print(response.headers['server'])
+                print(response.headers['content-type'])
+                print(response.raw._connection.sock.getpeername())
+                print(response.elapsed.total_seconds())
