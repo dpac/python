@@ -1,0 +1,28 @@
+#!/usr/local/bin/python3.6
+from pypac import PACSession, get_pac
+from requests.auth import HTTPProxyAuth
+#import re, requests, json
+#from pprint import pprint as pp
+import os
+import time
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from flask import Flask, redirect, url_for, request , render_template
+app = Flask(__name__)
+
+
+@app.route('/login',methods = ['POST'])
+def login():
+ site = request.form['nm']
+ pac = get_pac(url='http://vfproxy.vodafone.com.au/accelerated_pac_base.pac')
+ session = PACSession(pac,proxy_auth=HTTPProxyAuth('USERNAME','PASSWORD'))
+ response=session.get('http://'+site, stream=True)
+ x=str(response.raw._connection.sock.getpeername())[2:14]
+ result="proxy for url "+response.url+" is "+x
+ return result
+@app.route('/')
+def index():
+    return render_template('hello.html')  ''' Create template directory and html code'''
+
+if __name__ == '__main__':
+   app.run(host='0.0.0.0',debug = True)
