@@ -1,10 +1,9 @@
 #!/usr/local/bin/python3.6
 from pypac import PACSession, get_pac
 from requests.auth import HTTPProxyAuth
-#import re, requests, json
-#from pprint import pprint as pp
 import os
 import time
+import jinja2
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from flask import Flask, redirect, url_for, request , render_template
@@ -13,16 +12,23 @@ app = Flask(__name__)
 
 @app.route('/login',methods = ['POST'])
 def login():
+ loader=jinja2.FileSystemLoader(os.getcwd())
+ jenv=jinja2.Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
+ template=jenv.get_template('health_checks_temp.j2')
  site = request.form['nm']
  pac = get_pac(url='http://vfproxy.vodafone.com.au/accelerated_pac_base.pac')
  session = PACSession(pac,proxy_auth=HTTPProxyAuth('USERNAME','PASSWORD'))
- response=session.get('http://'+site, stream=True)
- x=str(response.raw._connection.sock.getpeername())[2:14]
- result="proxy for url "+response.url+" is "+x
- return result
+ response=session.get('http://'+site, stream=True,verify=False)
+ prx=str(response.raw._connection.sock.getpeername())[2:14]
+ if response.status_code==200:
+  print(template.render(dev_name=response.url, result=response.status_code,p=prx),file=open("/home/DC081072/PYTHON/PROXY/FLASK/mailbody.txt", "w"))
+ else:
+  print(template.render(dev_name=response.url, result=response.status_code,p=prx),file=open("/home/DC081072/PYTHON/PROXY/FLASK/mailbody.txt", "w"))
+ os.system('cat /home/DC081072/PYTHON/PROXY/FLASK/mailheader.txt /home/DC081072/PYTHON/PROXY/FLASK/mailbody.txt /home/DC081072/PYTHON/PROXY/FLASK/mailfooter.txt > /home/DC081072/PYTHON/PROXY/FLASK/templates/result.html')
+ return render_template('result.html')
 @app.route('/')
 def index():
-    return render_template('hello.html')  ''' Create template directory and html code'''
+    return render_template('hello.html')
 
 if __name__ == '__main__':
    app.run(host='0.0.0.0',debug = True)
