@@ -17,7 +17,7 @@ def login():
  template=jenv.get_template('URL.j2')
  site = request.form['nm']
  pac = get_pac(url='http://vfproxy.vodafone.com.au/accelerated_pac_base.pac')
- session = PACSession(pac,proxy_auth=HTTPProxyAuth('dc081072','July@2019'))
+ session = PACSession(pac,proxy_auth=HTTPProxyAuth('USERNAME','PASSWORD'))
  response=session.get('http://'+site, stream=True,verify=False)
  prx=str(response.raw._connection.sock.getpeername())[2:14]
  if response.status_code==200:
